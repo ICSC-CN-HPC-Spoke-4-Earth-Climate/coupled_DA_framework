@@ -1,0 +1,30 @@
+&setup_nml
+  ln_asmaice = .false.
+  ln_asmboth = .true.
+  ln_asmiau = .true.
+  incr_file = "ANINCR_ICE.nc"
+  nday_asmiau = 8
+  histfreq = "d", "x", "x", "x", "x"
+  ndtd = 2
+/
+&icefields_nml
+  f_vvel = "mdhxx"
+  f_uvel = "mdhxx"
+  f_tsfc = "mdhxx"
+    f_strairx = "mdhxx"
+  f_strairy = "mdhxx"
+  f_strcorx = "mdhxx"
+  f_strcory = "mdhxx"
+  f_strength = "mdhxx"
+  f_strintx = "mdhxx"
+  f_strinty = "mdhxx"
+  f_strocnx = "mdhxx"
+  f_strocny = "mdhxx"
+  f_strtltx = "mdhxx"
+  f_strtlty = "mdhxx"
+  f_snowfrac = "mdhxx"
+  f_snoice = "mdhxx"
+  f_sig1 = "mdhxx"
+  f_sig2 = "mdhxx"
+ f_rain = "mdhxx"
+/
