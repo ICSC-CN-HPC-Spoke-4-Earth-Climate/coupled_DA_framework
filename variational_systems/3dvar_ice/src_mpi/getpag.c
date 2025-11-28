@@ -1,0 +1,1 @@
+../src/getpag.c

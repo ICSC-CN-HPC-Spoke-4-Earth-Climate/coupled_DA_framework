@@ -1,0 +1,1 @@
+../src_nemo42/readobsa.F90

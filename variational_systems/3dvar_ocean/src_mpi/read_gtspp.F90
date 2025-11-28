@@ -1,0 +1,1 @@
+../src_nemo42/read_gtspp.F90

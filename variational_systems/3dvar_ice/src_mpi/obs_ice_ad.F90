@@ -1,0 +1,77 @@
+SUBROUTINE OBS_ICE_AD
+
+!-----------------------------------------------------------------------
+!                                                                      !
+! APPLY OBSERVATIONAL OPERATOR FOR SIC DATA, ADJOINT VERSION           !
+!                                                                      !
+!-----------------------------------------------------------------------
+
+ USE SET_KND
+ USE GRD_STR
+ USE OBSDEF
+ USE OBS_STR
+ USE CTL_STR
+ USE IOUNITS , ONLY : IOUNERR
+ USE MYFRTPROF, ONLY : MYFRTPROF_WALL
+ USE ICE_TRANSF
+ USE TLAD_VARS
+ IMPLICIT NONE
+
+ INTEGER(I4)   ::  K,I, J, D, KK,I2,OBS_K,NO(SST%NO),JP
+ INTEGER(I4) :: XIND1
+ REAL(KIND=R8) :: WKVAR
+
+CALL MYFRTPROF_WALL('OBS_SIC_AD: ADJOINT OF SIC OPERATOR',0)
+
+!... WATCHOUT : KK FOLLOWS SST/SLA/ ETC ARRAYS
+!               K  FOLLOWS GLOBAL OBSERVATION VECTOR
+
+! TO BE CALLED IN THE RIGHT ORDER!!!
+!GRD%SIC_PHYS_AD to be initialize to zero? psd_ad is initialized
+GRD%SIC_PHYS_AD=0._R8
+GRD%SIT_PHYS_AD=0._R8
+
+IF( SIC%NO .GT. 0 ) THEN
+
+ CYOBS : DO KK = 1,SIC%NO
+
+  IF(SIC%FLC(KK).EQ.0) CYCLE CYOBS
+  IF( .NOT. LL_4DVAR ) THEN
+    OBS%K = OBS%K + 1
+    OBS_K = OBS%K
+    IF( LL_4DVAR ) OBS_K = SIC%OBIN(K)
+   DO JP=1,NPQ
+      GRD%SIC_PHYS_AD(SIC%IB(KK,JP),SIC%JB(KK,JP)) = &
+      & GRD%SIC_PHYS_AD(SIC%IB(KK,JP),SIC%JB(KK,JP)) + SIC%PQ(KK,JP)*OBS%GRA(OBS_K)
+    ENDDO
+   
+  ENDIF
+
+ ENDDO CYOBS
+ENDIF
+
+IF( SIT%NO .GT. 0 ) THEN
+
+ CYOBS2 : DO KK = 1,SIT%NO
+  IF(SIT%FLC(KK).EQ.0) CYCLE CYOBS2
+  IF( .NOT. LL_4DVAR ) THEN
+    OBS%K = OBS%K + 1
+    OBS_K = OBS%K
+    IF( LL_4DVAR ) OBS_K = SIT%OBIN(K)
+!    IF (SIT_COEFF_TLAD(SIT%IB(KK,1),SIT%JB(KK,1)) .NE. 0._R8) THEN
+!        GRD%SIT_AD(SIT%IB(KK,1),SIT%JB(KK,1))=GRD%SIT_AD(SIT%IB(KK,1),SIT%JB(KK,1))+OBS%GRA(OBS_K)/SIT_COEFF_TLAD(SIT%IB(KK,1),SIT%JB(KK,1))
+!    ELSE
+!        GRD%SIT_AD(SIT%IB(KK,1),SIT%JB(KK,1))=0._R8
+!    ENDIF
+     DO JP=1,NPQ
+      GRD%SIT_PHYS_AD(SIT%IB(KK,JP),SIT%JB(KK,JP)) = &
+      & GRD%SIT_PHYS_AD(SIT%IB(KK,JP),SIT%JB(KK,JP)) + SIT%PQ(KK,JP)*OBS%GRA(OBS_K)
+    ENDDO
+
+  ENDIF
+ ENDDO CYOBS2
+ENDIF
+
+CALL MYFRTPROF_WALL('OBS_SIC_AD: ADJOINT OF SIC OPERATOR',1)
+
+END SUBROUTINE OBS_ICE_AD

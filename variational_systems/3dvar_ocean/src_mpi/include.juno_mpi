@@ -1,0 +1,55 @@
+#module load oneapi-2022.1.0/mkl/2022.1.0 oneapi-2022.1.0/tbb  intel-2021.6.0/curl/7.85.0-djjip
+#
+#... Compiler F90
+DEBUG0 = -g -traceback -fpe0
+DEBUG0 = 
+# DEBUG0 = 
+F_C = mpiifort -c -qopenmp -threads -i4 -r8 -shared-intel -xCore-AVX512 -mcmodel=medium -ipo
+#... Compiler F77
+F_77 = mpiifort -c -qopenmp -threads -i4 -r8 -shared-intel -xCore-AVX512 -mcmodel=medium -ipo
+#... Compiler flags
+F_F = -convert big_endian -align all -assume byterecl  -fp-model precise
+#... Compiler flags F77
+F_F77 = $(F_F) -fpconstant 
+#... Pre-processor options
+P_P = -Dopt_netcdf -DLINUX -DINTEL -DLITTLE -DSTATIC_LINKING -DINTEGER_IS_INT -DDEEPLY_FGAT -DSHARED_MEMORY -DXPRIVATE=PRIVATE -DLBFGSB3
+# -Wp,-DUSE_POINTERS
+#... Optimization flags
+F_O = -O2 -fno-alias  -ipo #-ipo -ip
+#... Debug flags
+F_D = -Cdebug
+#... C Compiler
+C_C = mpiicc -c -ipo
+#... C Flags
+C_F = -DLINUX -DSTATIC_LINKING -DXPRIVATE=PRIVATE \
+  -UINTERCEPT_ALLOC -DINTEGER_IS_INT -D_ABI64
+#... Linker
+F_L = mpiifort -i4 -r8 -ipo
+#... Linking options
+L_O = -qopenmp -threads -O2 -ipo #-ipo
+#... Debug flag (Debug on: 1 ; Debug off: whatelse)
+DEBUG = 0
+#... AR add
+AR_I = xiar -rv
+AR_I = ar -rv
+#... AR delete
+AR_E = xiar -d
+AR_E = ar -d
+#.. Remove
+RM   = rm -f
+
+#... NETCDF
+#
+#... Include dirs
+EXTINC = -I$(NETCDF_FORTRAN_HOME)/include -I$(NETCDF_C_DIR)/include -I../include
+#... Libraries
+ARPACK = $(ARPACK)
+EXTLIB = -L$(NETCDF_FORTRAN_HOME)/lib -L$(NETCDF_C_DIR)/lib \
+	 -L${MKLROOT}/lib/intel64 \
+	 -L${CURL}\
+	  -lnetcdf -lnetcdff \
+         -lpthread \
+         -Wl,--start-group -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -Wl,--end-group \
+         -L$(ARPACK) -larpack_IFORT \
+         -L/usr/lib64/ \
+	 -lz -lm -lcurl -lgpfs

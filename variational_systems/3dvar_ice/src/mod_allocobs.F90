@@ -1,0 +1,372 @@
+MODULE ALLOCOBS
+
+USE SET_KND
+USE OBS_STR
+USE GRD_STR
+USE IOUNITS
+USE RUN
+
+IMPLICIT NONE
+
+CONTAINS
+
+SUBROUTINE ALLOCINS(NIN,LINIT)
+
+IMPLICIT NONE
+
+INTEGER(I4), INTENT(IN) :: NIN
+LOGICAL    , INTENT(IN) :: LINIT
+
+  WRITE(IOUNLOG,*) ' ** ALLOCATING INSITU OBS VECTOR **'
+  WRITE(IOUNLOG,*) '    NUMBER OF OBS IS  ',NIN
+  WRITE(IOUNLOG,*) '    INITIALIZATION IS ',LINIT
+
+  ALLOCATE(INS%INO(NIN),INS%FLG(NIN),INS%FLC(NIN),INS%PAR(NIN))
+  ALLOCATE(INS%LON(NIN),INS%LAT(NIN),INS%DPT(NIN),INS%TIM(NIN))
+  ALLOCATE(INS%VAL(NIN),INS%BAC(NIN),INS%INC(NIN),INS%TDIST(NIN))
+  ALLOCATE(INS%BIA(NIN),INS%ERR(NIN),INS%EVE(NIN),INS%KTY(NIN))
+  ALLOCATE(INS%RES(NIN),INS%B_A(NIN),INS%OTYPE(NIN),INS%PROF(NIN))
+  ALLOCATE(INS%IB(NIN,NPQ),INS%JB(NIN,NPQ),INS%KB(NIN),INS%PLNO(NIN),INS%DSRC(NIN))
+  ALLOCATE(INS%IBH(NIN,NPQ),INS%JBH(NIN,NPQ))
+  ALLOCATE(INS%RB(NIN),INS%BGERR(NIN))
+  ALLOCATE(INS%PQ(NIN,2*NPQ))
+  ALLOCATE(INS%PQH(NIN,2*NPQ))
+  ALLOCATE(INS%INST(NIN))
+  ALLOCATE(INS%NIND(NIN))
+
+  IF(LINIT) THEN
+    INS%FLG(:)=1
+    INS%FLC(:)=0
+    INS%EVE(:)=0
+    INS%INC(:)=0._R8
+    INS%BIA(:)=0._R8
+    INS%ERR(:)=-999._R8
+    INS%RES(:)=-999._R8
+    INS%TIM(:)=-999._R8
+    INS%LON(:)=-999._R8
+    INS%LAT(:)=-999._R8
+    INS%VAL(:)=-999._R8
+    INS%DPT(:)=-999._R8
+    INS%BGERR(:)=-999._R8
+    INS%OTYPE(:)=-1
+    INS%PAR(:)=-1
+    INS%IB(:,:)=-1
+    INS%JB(:,:)=-1
+    INS%KB(:)=-1
+  ENDIF
+
+END SUBROUTINE ALLOCINS
+
+SUBROUTINE ALLOCSLA(NIN,LINIT)
+
+IMPLICIT NONE
+
+INTEGER(I4), INTENT(IN) :: NIN
+LOGICAL    , INTENT(IN) :: LINIT
+
+  ALLOCATE(SLA%LON(NIN),&
+        &SLA%INO(NIN),&
+        &SLA%NIND(NIN),&
+        &SLA%LAT(NIN),&
+        &SLA%VAL(NIN),&
+        &SLA%TDIST(NIN),&
+        &SLA%FLG(NIN),&
+        &SLA%FLC(NIN),&
+        &SLA%KSAT(NIN),&
+        &SLA%EVE(NIN),&
+        &SLA%BOT(NIN),&
+        &SLA%INC(NIN),&
+        &SLA%BAC(NIN),&
+        &SLA%BIA(NIN),&
+        &SLA%ERR(NIN),&
+        &SLA%RES(NIN),&
+        &SLA%B_A(NIN),&
+        &SLA%IB (NIN,NPQ),&
+        &SLA%JB (NIN,NPQ),&
+        &SLA%PQ (NIN,NPQ),&
+        &SLA%IBH(NIN,NPQ),&
+        &SLA%JBH(NIN,NPQ),&
+        &SLA%PQH(NIN,NPQ),&
+        &SLA%TRACK(NIN),&
+        &SLA%BGERR(NIN),&
+        &SLA%DPT(NIN),&
+        &SLA%TB(NIN,GRD%KM),&
+        &SLA%SB(NIN,GRD%KM),&
+        &SLA%BCP(NIN,NPRD_SLA),&
+        &SLA%TIM(NIN))
+
+  IF(LINIT) THEN
+    SLA%FLG(:) = 1
+    SLA%FLC(:) = 0
+    SLA%EVE(:) = 0
+    SLA%INC(:) = 0._R8
+    SLA%BIA(:) = 0._R8
+    SLA%ERR(:)=-999._R8
+    SLA%RES(:)=-999._R8
+    SLA%LON(:)=-999._R8
+    SLA%LAT(:)=-999._R8
+    SLA%TIM(:)=-999._R8
+    SLA%VAL(:)=-999._R8
+    SLA%KSAT(:)=-1
+    SLA%BGERR(:)=-999._R8
+    SLA%IB(:,:)=-1
+    SLA%JB(:,:)=-1
+    SLA%BOT(:)=-1
+    SLA%PQ(:,:)=-999._R8
+  ENDIF
+
+  IF( NCONF .EQ. 202 ) DEALLOCATE( SLA%TB, SLA%SB, SLA%BCP )
+
+END SUBROUTINE ALLOCSLA
+
+SUBROUTINE ALLOCSST(NIN,LINIT)
+
+IMPLICIT NONE
+
+INTEGER(I4), INTENT(IN) :: NIN
+LOGICAL    , INTENT(IN) :: LINIT
+
+ALLOCATE(SST%LON(NIN),&
+        &SST%LAT(NIN),&
+        &SST%NIND(NIN),&
+        &SST%VAL(NIN),&
+        &SST%TDIST(NIN),&
+        &SST%FLG(NIN),&
+        &SST%FLC(NIN),&
+        &SST%KSAT(NIN),&
+        &SST%EVE(NIN),&
+        &SST%INC(NIN),&
+        &SST%BAC(NIN),&
+        &SST%BIA(NIN),&
+        &SST%ERR(NIN),&
+        &SST%RES(NIN),&
+        &SST%B_A(NIN),&
+        &SST%IB (NIN,NPQ),&
+        &SST%JB (NIN,NPQ),&
+        &SST%PQ (NIN,NPQ),&
+        &SST%IBH(NIN,NPQ),&
+        &SST%JBH(NIN,NPQ),&
+        &SST%PQH(NIN,NPQ),&
+        &SST%TRACK(NIN),&
+        &SST%BGERR(NIN),&
+        &SST%BCP(NIN,NPRD_SST),&
+        &SST%TIM(NIN))
+
+IF(LINIT) THEN
+    SST%FLG(:) = 1
+    SST%FLC(:) = 0
+    SST%EVE(:) = 0
+    SST%INC(:) = 0._R8
+    SST%BIA(:) = 0._R8
+    SST%LON(:)=-999._R8
+    SST%LAT(:)=-999._R8
+    SST%ERR(:)=-999._R8
+    SST%RES(:)=-999._R8
+    SST%TIM(:)=-999._R8
+    SST%VAL(:)=-999._R8
+    SST%KSAT(:)=-1
+    SST%BGERR(:)=-999._R8
+    SST%IB(:,:)=-1
+    SST%JB(:,:)=-1
+ENDIF
+
+END SUBROUTINE ALLOCSST
+
+SUBROUTINE ALLOCSSS(NIN,LINIT)
+
+IMPLICIT NONE
+
+INTEGER(I4), INTENT(IN) :: NIN
+LOGICAL    , INTENT(IN) :: LINIT
+
+ALLOCATE(SSS%LON(NIN),&
+        &SSS%LAT(NIN),&
+        &SSS%NIND(NIN),&
+        &SSS%VAL(NIN),&
+        &SSS%TDIST(NIN),&
+        &SSS%FLG(NIN),&
+        &SSS%FLC(NIN),&
+        &SSS%KSAT(NIN),&
+        &SSS%EVE(NIN),&
+        &SSS%INC(NIN),&
+        &SSS%BAC(NIN),&
+        &SSS%BIA(NIN),&
+        &SSS%ERR(NIN),&
+        &SSS%RES(NIN),&
+        &SSS%B_A(NIN),&
+        &SSS%IB (NIN,NPQ),&
+        &SSS%JB (NIN,NPQ),&
+        &SSS%PQ (NIN,NPQ),&
+        &SSS%IBH(NIN,NPQ),&
+        &SSS%JBH(NIN,NPQ),&
+        &SSS%PQH(NIN,NPQ),&
+        &SSS%TRACK(NIN),&
+        &SSS%BGERR(NIN),&
+        &SSS%BCP(NIN,NPRD_SSS),&
+        &SSS%TIM(NIN))
+
+IF(LINIT) THEN
+    SSS%FLG(:) = 1
+    SSS%FLC(:) = 0
+    SSS%EVE(:) = 0
+    SSS%INC(:) = 0._R8
+    SSS%BIA(:) = 0._R8
+    SSS%ERR(:)=-999._R8
+    SSS%RES(:)=-999._R8
+    SSS%TIM(:)=-999._R8
+    SSS%LON(:)=-999._R8
+    SSS%LAT(:)=-999._R8
+    SSS%VAL(:)=-999._R8
+    SSS%KSAT(:)=-1
+    SSS%BGERR(:)=-999._R8
+    SSS%IB(:,:)=-1
+    SSS%JB(:,:)=-1
+ENDIF
+
+END SUBROUTINE ALLOCSSS
+
+
+SUBROUTINE ALLOCSIC(NIN,LINIT)
+
+IMPLICIT NONE
+
+INTEGER(I4), INTENT(IN) :: NIN
+LOGICAL    , INTENT(IN) :: LINIT
+
+ALLOCATE(SIC%LON(NIN),&
+        &SIC%LAT(NIN),&
+        &SIC%NIND(NIN),&
+        &SIC%VAL(NIN),&
+        &SIC%TDIST(NIN),&
+        &SIC%FLG(NIN),&
+        &SIC%FLC(NIN),&
+        &SIC%KSAT(NIN),&
+        &SIC%EVE(NIN),&
+        &SIC%INC(NIN),&
+        &SIC%BAC(NIN),&
+        &SIC%TRA_BAC(NIN),&
+        &SIC%BIA(NIN),&
+        &SIC%ERR(NIN),&
+        &SIC%RES(NIN),&
+        &SIC%B_A(NIN),&
+        &SIC%IB (NIN,NPQ),&
+        &SIC%JB (NIN,NPQ),&
+        &SIC%PQ (NIN,NPQ),&
+        &SIC%IBH(NIN,NPQ),&
+        &SIC%JBH(NIN,NPQ),&
+        &SIC%PQH(NIN,NPQ),&
+        &SIC%TRACK(NIN),&
+        &SIC%BGERR(NIN),&
+        &SIC%BCP(NIN,NPRD_SIC),&
+        &SIC%TIM(NIN))
+
+IF(LINIT) THEN
+    SIC%FLG(:) = 1
+    SIC%FLC(:) = 0
+    SIC%EVE(:) = 0
+    SIC%INC(:) = 0._R8
+    SIC%BIA(:) = 0._R8
+    SIC%LON(:)=-999._R8
+    SIC%LAT(:)=-999._R8
+    SIC%ERR(:)=-999._R8
+    SIC%RES(:)=-999._R8
+    SIC%TIM(:)=-999._R8
+    SIC%VAL(:)=-999._R8
+    SIC%KSAT(:)=-1
+    SIC%BGERR(:)=-999._R8
+    SIC%IB(:,:)=-1
+    SIC%JB(:,:)=-1
+ENDIF
+
+END SUBROUTINE ALLOCSIC
+
+
+SUBROUTINE ALLOCSIT(NIN,LINIT)
+
+IMPLICIT NONE
+
+INTEGER(I4), INTENT(IN) :: NIN
+LOGICAL    , INTENT(IN) :: LINIT
+
+ALLOCATE(SIT%LON(NIN),&
+        &SIT%LAT(NIN),&
+        &SIT%NIND(NIN),&
+        &SIT%VAL(NIN),&
+        &SIT%TDIST(NIN),&
+        &SIT%FLG(NIN),&
+        &SIT%FLC(NIN),&
+        &SIT%KSAT(NIN),&
+        &SIT%EVE(NIN),&
+        &SIT%INC(NIN),&
+        &SIT%BAC(NIN),&
+        &SIT%TRA_BAC(NIN),&
+        &SIT%BIA(NIN),&
+        &SIT%ERR(NIN),&
+        &SIT%RES(NIN),&
+        &SIT%B_A(NIN),&
+        &SIT%IB (NIN,NPQ),&
+        &SIT%JB (NIN,NPQ),&
+        &SIT%PQ (NIN,NPQ),&
+        &SIT%IBH(NIN,NPQ),&
+        &SIT%JBH(NIN,NPQ),&
+        &SIT%PQH(NIN,NPQ),&
+        &SIT%TRACK(NIN),&
+        &SIT%BGERR(NIN),&
+        &SIT%BCP(NIN,NPRD_SIT),&
+        &SIT%TIM(NIN))
+
+IF(LINIT) THEN
+    SIT%FLG(:) = 1
+    SIT%FLC(:) = 0
+    SIT%EVE(:) = 0
+    SIT%INC(:) = 0._R8
+    SIT%BIA(:) = 0._R8
+    SIT%LON(:)=-999._R8
+    SIT%LAT(:)=-999._R8
+    SIT%ERR(:)=-999._R8
+    SIT%RES(:)=-999._R8
+    SIT%TIM(:)=-999._R8
+    SIT%VAL(:)=-999._R8
+    SIT%KSAT(:)=-1
+    SIT%BGERR(:)=-999._R8
+    SIT%IB(:,:)=-1
+    SIT%JB(:,:)=-1
+ENDIF
+
+END SUBROUTINE ALLOCSIT
+
+SUBROUTINE ALLOCINSB(NIN,LINIT,INS_TMP)
+
+IMPLICIT NONE
+
+INTEGER(I4), INTENT(IN) :: NIN
+LOGICAL    , INTENT(IN) :: LINIT
+TYPE(INS_T) :: INS_TMP
+
+  WRITE(IOUNLOG,*) ' ** ALLOCATING INSITU OBS VECTOR **'
+  WRITE(IOUNLOG,*) '    NUMBER OF OBS IS  ',NIN
+  WRITE(IOUNLOG,*) '    INITIALIZATION IS ',LINIT
+
+  ALLOCATE(INS_TMP%INO(NIN),INS_TMP%FLG(NIN),INS_TMP%FLC(NIN),INS_TMP%PAR(NIN))
+  ALLOCATE(INS_TMP%LON(NIN),INS_TMP%LAT(NIN),INS_TMP%DPT(NIN),INS_TMP%TIM(NIN))
+  ALLOCATE(INS_TMP%VAL(NIN),INS_TMP%BAC(NIN),INS_TMP%INC(NIN),INS_TMP%TDIST(NIN))
+  ALLOCATE(INS_TMP%BIA(NIN),INS_TMP%ERR(NIN),INS_TMP%EVE(NIN),INS_TMP%KTY(NIN))
+  ALLOCATE(INS_TMP%RES(NIN),INS_TMP%B_A(NIN),INS_TMP%OTYPE(NIN),INS_TMP%PROF(NIN))
+  ALLOCATE(INS_TMP%IB(NIN,NPQ),INS_TMP%JB(NIN,NPQ),INS_TMP%KB(NIN),INS_TMP%PLNO(NIN),INS_TMP%DSRC(NIN))
+  ALLOCATE(INS_TMP%RB(NIN),INS_TMP%BGERR(NIN))
+  ALLOCATE(INS_TMP%PQ(NIN,2*NPQ))
+  ALLOCATE(INS_TMP%INST(NIN))
+  ALLOCATE(INS_TMP%NIND(NIN))
+
+  IF(LINIT) THEN
+    INS_TMP%FLG(:)=1
+    INS_TMP%FLC(:)=0
+    INS_TMP%EVE(:)=0
+    INS_TMP%BIA(:)=0._R8
+    INS_TMP%INC(:)=0._R8
+    INS_TMP%ERR(:)=100._R8
+  ENDIF
+
+END SUBROUTINE ALLOCINSB
+
+END MODULE ALLOCOBS
